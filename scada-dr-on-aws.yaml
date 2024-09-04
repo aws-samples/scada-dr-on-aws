@@ -1,0 +1,2038 @@
+Resources:
+  scriptsandbinariesC7FE93E9:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: scada-dr-on-aws-s3-scripts-and-binaries-1715672845211
+      Tags:
+        - Key: aws-cdk:auto-delete-objects
+          Value: "true"
+        - Key: aws-cdk:cr-owned:script:9ec94dd9
+          Value: "true"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  scriptsandbinariesPolicy7561D699:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: scriptsandbinariesC7FE93E9
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:DeleteObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:PutBucketPolicy
+            Effect: Allow
+            Principal:
+              AWS:
+                Fn::GetAtt:
+                  - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+                  - Arn
+            Resource:
+              - Fn::GetAtt:
+                  - scriptsandbinariesC7FE93E9
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - scriptsandbinariesC7FE93E9
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+  scriptsandbinariesAutoDeleteObjectsCustomResource8330C4BE:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+          - Arn
+      BucketName:
+        Ref: scriptsandbinariesC7FE93E9
+    DependsOn:
+      - scriptsandbinariesPolicy7561D699
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+        S3Key: b7f33614a69548d6bafe224d751a7ef238cde19097415e553fe8b63a4c8fd8a6.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+          - Arn
+      Runtime: nodejs18.x
+      Description:
+        Fn::Join:
+          - ""
+          - - "Lambda function for auto-deleting objects in "
+            - Ref: scriptsandbinariesC7FE93E9
+            - " S3 bucket."
+    DependsOn:
+      - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+  uploadinstallscriptAwsCliLayer4B951DE2:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      Content:
+        S3Bucket: cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+        S3Key: 3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip
+      Description: /opt/awscli/aws
+  uploadinstallscriptCustomResource6E0D9B79:
+    Type: Custom::CDKBucketDeployment
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536
+          - Arn
+      SourceBucketNames:
+        - cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+      SourceObjectKeys:
+        - 94e21be94f457753e7462d5fa5d82d732cb6beae48c6c83fd4c1ee86c69d48bc.zip
+      DestinationBucketName:
+        Ref: scriptsandbinariesC7FE93E9
+      DestinationBucketKeyPrefix: script
+      Prune: true
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - arn:aws:s3:::cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+              - arn:aws:s3:::cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1/*
+          - Action:
+              - s3:Abort*
+              - s3:DeleteObject*
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+              - s3:PutObject
+              - s3:PutObjectLegalHold
+              - s3:PutObjectRetention
+              - s3:PutObjectTagging
+              - s3:PutObjectVersionTagging
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - scriptsandbinariesC7FE93E9
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - scriptsandbinariesC7FE93E9
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF
+      Roles:
+        - Ref: CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+  CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+        S3Key: e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip
+      Environment:
+        Variables:
+          AWS_CA_BUNDLE: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+      Handler: index.handler
+      Layers:
+        - Ref: uploadinstallscriptAwsCliLayer4B951DE2
+      Role:
+        Fn::GetAtt:
+          - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+          - Arn
+      Runtime: python3.9
+      Timeout: 900
+    DependsOn:
+      - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF
+      - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265
+  scadaonpremisevpc2976FBA2:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/20
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc
+  scadaonpremisevpcscadaonpremisepublicSubnet1Subnet20768315:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.1.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_premise_public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet1
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremisepublicSubnet1RouteTableD929ADCB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet1
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremisepublicSubnet1RouteTableAssociation4E0C747E:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet1RouteTableD929ADCB
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet1Subnet20768315
+  scadaonpremisevpcscadaonpremisepublicSubnet1DefaultRoute72053B39:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: scadaonpremisevpcIGW19A31B6C
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet1RouteTableD929ADCB
+    DependsOn:
+      - scadaonpremisevpcVPCGWB1FB78BA
+  scadaonpremisevpcscadaonpremisepublicSubnet1EIPC30B1C9A:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet1
+  scadaonpremisevpcscadaonpremisepublicSubnet1NATGatewayE96959FC:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - scadaonpremisevpcscadaonpremisepublicSubnet1EIPC30B1C9A
+          - AllocationId
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet1Subnet20768315
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet1
+    DependsOn:
+      - scadaonpremisevpcscadaonpremisepublicSubnet1DefaultRoute72053B39
+      - scadaonpremisevpcscadaonpremisepublicSubnet1RouteTableAssociation4E0C747E
+  scadaonpremisevpcscadaonpremisepublicSubnet2Subnet82D5513A:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.1.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_premise_public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet2
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremisepublicSubnet2RouteTable16DDD04F:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet2
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremisepublicSubnet2RouteTableAssociation7CD034A2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet2RouteTable16DDD04F
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet2Subnet82D5513A
+  scadaonpremisevpcscadaonpremisepublicSubnet2DefaultRoute6846A440:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: scadaonpremisevpcIGW19A31B6C
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet2RouteTable16DDD04F
+    DependsOn:
+      - scadaonpremisevpcVPCGWB1FB78BA
+  scadaonpremisevpcscadaonpremisepublicSubnet2EIP6C45C320:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet2
+  scadaonpremisevpcscadaonpremisepublicSubnet2NATGateway559852E7:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - scadaonpremisevpcscadaonpremisepublicSubnet2EIP6C45C320
+          - AllocationId
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet2Subnet82D5513A
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_publicSubnet2
+    DependsOn:
+      - scadaonpremisevpcscadaonpremisepublicSubnet2DefaultRoute6846A440
+      - scadaonpremisevpcscadaonpremisepublicSubnet2RouteTableAssociation7CD034A2
+  scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.1.2.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_premise_private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_privateSubnet1
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTable0225BEA6:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_privateSubnet1
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTableAssociation15B40D88:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTable0225BEA6
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+  scadaonpremisevpcscadaonpremiseprivateSubnet1DefaultRoute991AB3B5:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet1NATGatewayE96959FC
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTable0225BEA6
+  scadaonpremisevpcscadaonpremiseprivateSubnet1towardsCloud2ADFD4179:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.2.0.0/20
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTable0225BEA6
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - CloudTransitGatewayAttachment
+  scadaonpremisevpcscadaonpremiseprivateSubnet1towardsEdge2BC7C5F85:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.3.0.0/20
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTable0225BEA6
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - CloudTransitGatewayAttachment
+  scadaonpremisevpcscadaonpremiseprivateSubnet2SubnetA83629F3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.1.3.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_premise_private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_privateSubnet2
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableF3DDFC07:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc/scada_on_premise_privateSubnet2
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableAssociation23BEA518:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableF3DDFC07
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2SubnetA83629F3
+  scadaonpremisevpcscadaonpremiseprivateSubnet2DefaultRoute6B8CD6E2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: scadaonpremisevpcscadaonpremisepublicSubnet2NATGateway559852E7
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableF3DDFC07
+  scadaonpremisevpcscadaonpremiseprivateSubnet2towardsCloud283D0DD8C:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.2.0.0/20
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableF3DDFC07
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - CloudTransitGatewayAttachment
+  scadaonpremisevpcscadaonpremiseprivateSubnet2towardsEdge2B194A98D:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.3.0.0/20
+      RouteTableId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableF3DDFC07
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - CloudTransitGatewayAttachment
+  scadaonpremisevpcIGW19A31B6C:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_premise_vpc
+  scadaonpremisevpcVPCGWB1FB78BA:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId:
+        Ref: scadaonpremisevpcIGW19A31B6C
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaonpremisevpcRestrictDefaultSecurityGroupCustomResource482AEA76:
+    Type: Custom::VpcRestrictDefaultSG
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E
+          - Arn
+      DefaultSecurityGroupId:
+        Fn::GetAtt:
+          - scadaonpremisevpc2976FBA2
+          - DefaultSecurityGroup
+      Account: "{{.AccountId}}"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: Inline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:AuthorizeSecurityGroupEgress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupEgress
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - arn:aws:ec2:eu-west-1:{{.AccountId}}:security-group/
+                        - Fn::GetAtt:
+                            - scadaonpremisevpc2976FBA2
+                            - DefaultSecurityGroup
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:AuthorizeSecurityGroupEgress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupEgress
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - arn:aws:ec2:eu-west-1:{{.AccountId}}:security-group/
+                        - Fn::GetAtt:
+                            - scadaoncloudvpc4593E5FB
+                            - DefaultSecurityGroup
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:AuthorizeSecurityGroupEgress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupEgress
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - arn:aws:ec2:eu-west-1:{{.AccountId}}:security-group/
+                        - Fn::GetAtt:
+                            - devicesonpremisevpcDCD45704
+                            - DefaultSecurityGroup
+  CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+        S3Key: dd5711540f04e06aa955d7f4862fc04e8cdea464cb590dae91ed2976bb78098e.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+          - Arn
+      Runtime: nodejs18.x
+      Description: Lambda function for removing all inbound/outbound rules from the VPC default security group
+    DependsOn:
+      - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+  scadaoncloudvpc4593E5FB:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.2.0.0/20
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc
+  scadaoncloudvpcscadaoncloudpublicSubnet1SubnetA918A53D:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.2.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_cloud_public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet1
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableC1C810E2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet1
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableAssociationFC7C5E70:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableC1C810E2
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1SubnetA918A53D
+  scadaoncloudvpcscadaoncloudpublicSubnet1DefaultRouteEB690841:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: scadaoncloudvpcIGWD552446F
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableC1C810E2
+    DependsOn:
+      - scadaoncloudvpcVPCGWF79E4712
+  scadaoncloudvpcscadaoncloudpublicSubnet1EIPF58E11CB:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet1
+  scadaoncloudvpcscadaoncloudpublicSubnet1NATGatewayA5DB37B8:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - scadaoncloudvpcscadaoncloudpublicSubnet1EIPF58E11CB
+          - AllocationId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1SubnetA918A53D
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet1
+    DependsOn:
+      - scadaoncloudvpcscadaoncloudpublicSubnet1DefaultRouteEB690841
+      - scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableAssociationFC7C5E70
+  scadaoncloudvpcscadaoncloudpublicSubnet1towardsOnpremise1DAE4CC5:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.1.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1RouteTableC1C810E2
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcscadaoncloudpublicSubnet2SubnetC4500458:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.2.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_cloud_public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet2
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableB3EB4616:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet2
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableAssociationDFB919E3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableB3EB4616
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2SubnetC4500458
+  scadaoncloudvpcscadaoncloudpublicSubnet2DefaultRoute6FDBC539:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: scadaoncloudvpcIGWD552446F
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableB3EB4616
+    DependsOn:
+      - scadaoncloudvpcVPCGWF79E4712
+  scadaoncloudvpcscadaoncloudpublicSubnet2EIP38B66931:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet2
+  scadaoncloudvpcscadaoncloudpublicSubnet2NATGateway38C856B3:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - scadaoncloudvpcscadaoncloudpublicSubnet2EIP38B66931
+          - AllocationId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2SubnetC4500458
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_publicSubnet2
+    DependsOn:
+      - scadaoncloudvpcscadaoncloudpublicSubnet2DefaultRoute6FDBC539
+      - scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableAssociationDFB919E3
+  scadaoncloudvpcscadaoncloudpublicSubnet2towardsOnpremise2B566B14:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.1.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2RouteTableB3EB4616
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.2.2.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_cloud_private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_privateSubnet1
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudprivateSubnet1RouteTable8FD778CD:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_privateSubnet1
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudprivateSubnet1RouteTableAssociation4B77BDA3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1RouteTable8FD778CD
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+  scadaoncloudvpcscadaoncloudprivateSubnet1DefaultRoute9E560C91:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1NATGatewayA5DB37B8
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1RouteTable8FD778CD
+  scadaoncloudvpcscadaoncloudprivateSubnet1towardsOnpremise1D6E58ECD:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.1.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1RouteTable8FD778CD
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcscadaoncloudprivateSubnet1towardsEdge16440C5A0:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.3.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1RouteTable8FD778CD
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcscadaoncloudprivateSubnet2Subnet49D996B5:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1b
+      CidrBlock: 10.2.3.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: scada_on_cloud_private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_privateSubnet2
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableF540A3C4:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc/scada_on_cloud_privateSubnet2
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableAssociation4957A0DE:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableF540A3C4
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2Subnet49D996B5
+  scadaoncloudvpcscadaoncloudprivateSubnet2DefaultRoute49C9CCFF:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet2NATGateway38C856B3
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableF540A3C4
+  scadaoncloudvpcscadaoncloudprivateSubnet2towardsOnpremise1AA58CE32:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.1.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableF540A3C4
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcscadaoncloudprivateSubnet2towardsEdge18EDAE9FE:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.3.0.0/20
+      RouteTableId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2RouteTableF540A3C4
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - EdgeTransitGatewayAttachment
+  scadaoncloudvpcIGWD552446F:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/scada_on_cloud_vpc
+  scadaoncloudvpcVPCGWF79E4712:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId:
+        Ref: scadaoncloudvpcIGWD552446F
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  scadaoncloudvpcRestrictDefaultSecurityGroupCustomResource7119A785:
+    Type: Custom::VpcRestrictDefaultSG
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E
+          - Arn
+      DefaultSecurityGroupId:
+        Fn::GetAtt:
+          - scadaoncloudvpc4593E5FB
+          - DefaultSecurityGroup
+      Account: "{{.AccountId}}"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  devicesonpremisevpcDCD45704:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.3.0.0/20
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc
+  devicesonpremisevpcdevicesonpremisepublicSubnet1Subnet3778CA19:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.3.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: devices_on_premise_public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_publicSubnet1
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  devicesonpremisevpcdevicesonpremisepublicSubnet1RouteTableFA478075:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_publicSubnet1
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  devicesonpremisevpcdevicesonpremisepublicSubnet1RouteTableAssociationDE7F8A52:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremisepublicSubnet1RouteTableFA478075
+      SubnetId:
+        Ref: devicesonpremisevpcdevicesonpremisepublicSubnet1Subnet3778CA19
+  devicesonpremisevpcdevicesonpremisepublicSubnet1DefaultRoute396055C9:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: devicesonpremisevpcIGW623FD0BF
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremisepublicSubnet1RouteTableFA478075
+    DependsOn:
+      - devicesonpremisevpcVPCGWC91C8FAC
+  devicesonpremisevpcdevicesonpremisepublicSubnet1EIPA48B675B:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_publicSubnet1
+  devicesonpremisevpcdevicesonpremisepublicSubnet1NATGatewayEF9DF149:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - devicesonpremisevpcdevicesonpremisepublicSubnet1EIPA48B675B
+          - AllocationId
+      SubnetId:
+        Ref: devicesonpremisevpcdevicesonpremisepublicSubnet1Subnet3778CA19
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_publicSubnet1
+    DependsOn:
+      - devicesonpremisevpcdevicesonpremisepublicSubnet1DefaultRoute396055C9
+      - devicesonpremisevpcdevicesonpremisepublicSubnet1RouteTableAssociationDE7F8A52
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1SubnetC40B7F85:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: eu-west-1a
+      CidrBlock: 10.3.1.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: devices_on_premise_private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_privateSubnet1
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableA8459579:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc/devices_on_premise_privateSubnet1
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableAssociation74710965:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableA8459579
+      SubnetId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1SubnetC40B7F85
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1DefaultRoute4793908E:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: devicesonpremisevpcdevicesonpremisepublicSubnet1NATGatewayEF9DF149
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableA8459579
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1towardsCloud3BB23A807:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.2.0.0/20
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableA8459579
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - OnPremTransitGatewayAttachment
+  devicesonpremisevpcdevicesonpremiseprivateSubnet1towardsOnPremise398993FFC:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.1.0.0/20
+      RouteTableId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1RouteTableA8459579
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+    DependsOn:
+      - OnPremTransitGatewayAttachment
+  devicesonpremisevpcIGW623FD0BF:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/devices_on_premise_vpc
+  devicesonpremisevpcVPCGWC91C8FAC:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId:
+        Ref: devicesonpremisevpcIGW623FD0BF
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  devicesonpremisevpcRestrictDefaultSecurityGroupCustomResourceB5545135:
+    Type: Custom::VpcRestrictDefaultSG
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E
+          - Arn
+      DefaultSecurityGroupId:
+        Fn::GetAtt:
+          - devicesonpremisevpcDCD45704
+          - DefaultSecurityGroup
+      Account: "{{.AccountId}}"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  scadadrclusterec2bastionroleCFAEFE3C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonSSMManagedInstanceCore
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonS3ReadOnlyAccess
+  ec2scadabastionsgAB53E754:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/ec2_scada_bastion_sg
+      GroupName: ec2_scada_bastion_sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  oncloudbastionhostInstanceProfile69AD0585:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadadrclusterec2bastionroleCFAEFE3C
+  oncloudbastionhost17093DD7:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: oncloudbastionhostInstanceProfile69AD0585
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - ec2scadabastionsgAB53E754
+            - GroupId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudpublicSubnet1SubnetA918A53D
+      Tags:
+        - Key: Name
+          Value: oncloud_bastion_host
+      UserData:
+        Fn::Base64: |-
+          <powershell>$windows_admin_password="TempPassword11!!"
+          $admin = [adsi]("WinNT://./administrator, user")
+          $admin.PSBase.Invoke("SetPassword", $windows_admin_password)
+          md -Path $env:tempedgeinstall -erroraction SilentlyContinue | Out-Null
+          $Download = join-path $env:tempedgeinstall MicrosoftEdgeEnterpriseX64.msi
+          Invoke-WebRequest "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/a2662b5b-97d0-4312-8946-598355851b3b/MicrosoftEdgeEnterpriseX64.msi"  -OutFile $Download
+          Start-Process "$Download" -ArgumentList "/quiet"
+          $Path = $env:TEMP; $Installer = 'chrome_installer.exe'; Invoke-WebRequest -Uri 'http://dl.google.com/chrome/install/375.126/chrome_installer.exe' -OutFile $Path$Installer; Start-Process -FilePath $Path$Installer -Args '/silent /install' -Verb RunAs -Wait; Remove-Item -Path $Path$Installer</powershell>
+    DependsOn:
+      - scadadrclusterec2bastionroleCFAEFE3C
+  MainParameterGroup2089CA66:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: Parameter group for postgres16
+      Family: postgres16
+      Parameters:
+        rds.enable_pgactive: "1"
+        rds.custom_dns_resolution: "1"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  sgdbscadaonprem405962C8:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/sg_db_scada_onprem
+      GroupName: sg_db_scada_onprem
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.2.0.0/20
+          Description: Open connection to RDS from RDS for replica
+          FromPort: 5433
+          IpProtocol: tcp
+          ToPort: 5433
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  sgdbscadaonpremfromScadaDrOnAwsStacksgec2scadasgA9E70D3254338FD22DDC:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Open connection to DB from Ignition
+      FromPort: 5433
+      GroupId:
+        Fn::GetAtt:
+          - sgdbscadaonprem405962C8
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - sgec2scadasg5B7B8ACA
+          - GroupId
+      ToPort: 5433
+  sgec2scadasg5B7B8ACA:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/sg_ec2_scada_sg
+      GroupName: ec2_scada_dr_sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.2.0.0/20
+          Description: Postgres connection for replica
+          FromPort: 5433
+          IpProtocol: tcp
+          ToPort: 5433
+        - CidrIp: 10.2.0.0/20
+          Description: Bastion connection for admin
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+        - CidrIp: 10.2.0.0/20
+          Description: Connection for ignition
+          FromPort: 8060
+          IpProtocol: tcp
+          ToPort: 8060
+        - CidrIp: 10.1.0.0/20
+          Description: Connection for ignition
+          FromPort: 8060
+          IpProtocol: tcp
+          ToPort: 8060
+        - CidrIp: 10.1.0.0/20
+          Description: Connection for healthcheck
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  scadaprimaryonpremisedbSubnetGroup7A162957:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for scada_primary_onpremise_db database
+      SubnetIds:
+        - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+        - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2SubnetA83629F3
+  scadaprimaryonpremisedbSecretDBD4C86E:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description:
+        Fn::Join:
+          - ""
+          - - "Generated by the CDK for stack: "
+            - Ref: AWS::StackName
+      GenerateSecretString:
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+        GenerateStringKey: password
+        PasswordLength: 30
+        SecretStringTemplate: '{"username":"administrator"}'
+      Name: onPremDBCredentials
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  scadaprimaryonpremisedbSecretAttachmentAEBBBC6C:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: scadaprimaryonpremisedbSecretDBD4C86E
+      TargetId:
+        Ref: scadaprimaryonpremisedb2286B764
+      TargetType: AWS::RDS::DBInstance
+  scadaprimaryonpremisedb2286B764:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: "100"
+      CopyTagsToSnapshot: true
+      DBInstanceClass: db.t3.small
+      DBParameterGroupName:
+        Ref: MainParameterGroup2089CA66
+      DBSubnetGroupName:
+        Ref: scadaprimaryonpremisedbSubnetGroup7A162957
+      Engine: postgres
+      EngineVersion: "16.1"
+      MasterUserPassword:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: scadaprimaryonpremisedbSecretDBD4C86E
+            - :SecretString:password::}}
+      MasterUsername:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: scadaprimaryonpremisedbSecretDBD4C86E
+            - :SecretString:username::}}
+      PubliclyAccessible: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - Fn::GetAtt:
+            - sgdbscadaonprem405962C8
+            - GroupId
+    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Snapshot
+  sgdbscadaoncloud60EC2993:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/sg_db_scada_oncloud
+      GroupName: sg_db_scada_oncloud
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.1.0.0/20
+          Description: Open connection to RDS from RDS for replica
+          FromPort: 5433
+          IpProtocol: tcp
+          ToPort: 5433
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  sgdbscadaoncloudfromScadaDrOnAwsStackec2scadaprimarysg56849D5154331D9E6992:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Open connection to DB from Ignition
+      FromPort: 5433
+      GroupId:
+        Fn::GetAtt:
+          - sgdbscadaoncloud60EC2993
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ec2scadaprimarysgB7054CCC
+          - GroupId
+      ToPort: 5433
+  ec2scadaprimarysgB7054CCC:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/ec2_scada_primary_sg
+      GroupName: ec2_scada_primary_sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.1.0.0/20
+          Description: Postgres connection for replica
+          FromPort: 5433
+          IpProtocol: tcp
+          ToPort: 5433
+        - CidrIp: 10.1.0.0/20
+          Description: Postgres connection for replica
+          FromPort: 8060
+          IpProtocol: tcp
+          ToPort: 8060
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  ec2scadaprimarysgfromScadaDrOnAwsStackec2scadabastionsg4395D03644374BBE5FF:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ignition connection
+      FromPort: 443
+      GroupId:
+        Fn::GetAtt:
+          - ec2scadaprimarysgB7054CCC
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ec2scadabastionsgAB53E754
+          - GroupId
+      ToPort: 443
+  ec2scadaprimarysgfromScadaDrOnAwsStackec2scadaprimarysg56849D518060E4F2D815:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Ignition connection for replica
+      FromPort: 8060
+      GroupId:
+        Fn::GetAtt:
+          - ec2scadaprimarysgB7054CCC
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ec2scadaprimarysgB7054CCC
+          - GroupId
+      ToPort: 8060
+  scadadrclouddbSubnetGroupEECF1F22:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for scada_dr_cloud_db database
+      SubnetIds:
+        - Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+        - Ref: scadaoncloudvpcscadaoncloudprivateSubnet2Subnet49D996B5
+  scadadrclouddbSecretB099F385:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description:
+        Fn::Join:
+          - ""
+          - - "Generated by the CDK for stack: "
+            - Ref: AWS::StackName
+      GenerateSecretString:
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+        GenerateStringKey: password
+        PasswordLength: 30
+        SecretStringTemplate: '{"username":"administrator"}'
+      Name: onCloudDBCredentials
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  scadadrclouddbSecretAttachment0E4E12D1:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: scadadrclouddbSecretB099F385
+      TargetId:
+        Ref: scadadrclouddb78BB9C5A
+      TargetType: AWS::RDS::DBInstance
+  scadadrclouddb78BB9C5A:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: "100"
+      CopyTagsToSnapshot: true
+      DBInstanceClass: db.t3.small
+      DBParameterGroupName:
+        Ref: MainParameterGroup2089CA66
+      DBSubnetGroupName:
+        Ref: scadadrclouddbSubnetGroupEECF1F22
+      Engine: postgres
+      EngineVersion: "16.1"
+      MasterUserPassword:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: scadadrclouddbSecretB099F385
+            - :SecretString:password::}}
+      MasterUsername:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: scadadrclouddbSecretB099F385
+            - :SecretString:username::}}
+      PubliclyAccessible: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - Fn::GetAtt:
+            - sgdbscadaoncloud60EC2993
+            - GroupId
+    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Snapshot
+  scadaprimaryclusterec2role878E7FC3:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonSSMManagedInstanceCore
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonS3ReadOnlyAccess
+  scadaprimaryclusterec2roleDefaultPolicy36095115:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - elasticfilesystem:DescribeFileSystems
+              - elasticfilesystem:DescribeMountTargets
+              - secretsmanager:DescribeSecret
+              - secretsmanager:GetResourcePolicy
+              - secretsmanager:GetSecretValue
+              - secretsmanager:ListSecretVersionIds
+              - ssm:PutParameter
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: scadaprimaryclusterec2roleDefaultPolicy36095115
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  scadaprimaryonpremiseInstanceProfile768EB23D:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  scadaprimaryonpremise82CA4962:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: scadaprimaryonpremiseInstanceProfile768EB23D
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - sgec2scadasg5B7B8ACA
+            - GroupId
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+      Tags:
+        - Key: Name
+          Value: scada_primary_onpremise
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionOnPremHostname' --value $(hostname) --type String --overwrite
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionOnPremIP' --value $(hostname -I) --type String --overwrite
+                sudo yum install jq -y
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - |-
+                /script/creation_v2.sh .
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - "/script/postgres_replication.sh .\nsudo chmod +x ./creation_v2.sh\nsudo chmod +x ./postgres_replication.sh\ncounter=0\nbackupHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupHostname' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$backupHostname\" ] && [ $counter -lt 1000 ]; do backupHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupHostname' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\nbackupIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupIP' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$backupIP\" ] && [ $counter -lt 1000 ]; do backupIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupIP' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\necho 'Calling the Ignitition creation_v2 script'\nonpremDBPasswd=$(aws secretsmanager get-secret-value --region 'eu-west-1' --secret-id 'onPremDBCredentials' --output text --query 'SecretString' | jq -r '.password')\nsudo ./creation_v2.sh --stackname ScadaDrOnAwsStack --gwname OnPremise_Ignition_Server --gwusername admin --gwpassword admin --redundancyrole master --dbip "
+              - Fn::GetAtt:
+                  - scadaprimaryonpremisedb2286B764
+                  - Endpoint.Address
+              - " --dbport "
+              - Fn::GetAtt:
+                  - scadaprimaryonpremisedb2286B764
+                  - Endpoint.Port
+              - " --dbschema postgres --dbusername administrator --dbpassword $onpremDBPasswd --ganincominggwname1 OnPremise_Backup_Ignition_Server --ganincomingip1 $backupIP --ganincominghost1 $backupHostname\nsudo yum install \"nfs-utils\" -y\nsudo mkdir /mnt/efs \nfileSystemId=$(aws efs describe-file-systems --region eu-west-1 --query 'FileSystems[?Name==`ScadaDrOnAwsStack/centralEFSBackups`].FileSystemId' --output text)\nmountPoint=$(aws efs describe-mount-targets --file-system-id $fileSystemId --region eu-west-1 --query 'MountTargets[0].IpAddress' --output text)\nsudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport $mountPoint:/ /mnt/efs\necho \"*/5 * * * * root /usr/local/bin/ignition/gwcmd --backup /mnt/efs/\" > /etc/cron.d/per_xminute\nsudo ./postgres_replication.sh onprem eu-west-1"
+    DependsOn:
+      - scadaprimaryclusterec2roleDefaultPolicy36095115
+      - scadaprimaryclusterec2role878E7FC3
+  scadabackuponpremiseInstanceProfileC85D1BA2:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  scadabackuponpremise9D3949B5:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: scadabackuponpremiseInstanceProfileC85D1BA2
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - sgec2scadasg5B7B8ACA
+            - GroupId
+      SubnetId:
+        Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+      Tags:
+        - Key: Name
+          Value: scada_backup_onpremise
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                sudo yum install jq -y
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupHostname' --value $(hostname) --type String --overwrite
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionOnPremBackupIP' --value $(hostname -I) --type String --overwrite
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - "/script/creation_v2.sh .\nsudo chmod +x ./creation_v2.sh\necho 'Calling the Ignitition creation_v2 script'\nonpremDBPasswd=$(aws secretsmanager get-secret-value --region 'eu-west-1' --secret-id 'onPremDBCredentials' --output text --query 'SecretString' | jq -r '.password')\nsudo chmod +x ./creation_v2.sh\ncounter=0\nmasterHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremHostname' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$masterHostname\" ] && [ $counter -lt 1000 ]; do masterHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremHostname' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\nmasterIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremIP' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$masterIP\" ] && [ $counter -lt 1000 ]; do masterIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionOnPremIP' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\ngancertingwname=$(aws ssm get-parameter --region 'eu-west-1' --name '/ScadaDrOnAwsStack/OnPremise_Backup_Ignition_Server/gwuuid' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$gancertingwname\" ] && [ $counter -lt 1000 ]; do gancertingwname=$(aws ssm get-parameter --region 'eu-west-1' --name '/ScadaDrOnAwsStack/OnPremise_Backup_Ignition_Server/gwuuid' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\nsudo ./creation_v2.sh --stackname ScadaDrOnAwsStack --gwname OnPremise_Backup_Ignition_Server --gwusername admin --gwpassword admin --redundancyrole backup --masterip $masterHostname --dbip "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Address
+              - " --dbport "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Port
+              - |2-
+                 --dbschema postgres --dbusername administrator --dbpassword $onCloudDBPasswd --gancertingwname OnPremise_Backup_Ignition_Server
+                sudo yum install "amazon-efs-utils" -y
+                sudo mkdir /mnt/efs
+                fileSystemId=$(aws efs describe-file-systems --region eu-west-1 --query 'FileSystems[?Name==`ScadaDrOnAwsStack/centralEFSBackups`].FileSystemId' --output text)
+                mountPoint=$(aws efs describe-mount-targets --file-system-id $fileSystemId --region eu-west-1 --query 'MountTargets[1].IpAddress' --output text)
+                sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport $mountPoint:/ /mnt/efs
+                echo "*/5 * * * * root /usr/local/bin/ignition/gwcmd --backup /mnt/efs/" > /etc/cron.d/per_xminute
+    DependsOn:
+      - scadaprimaryclusterec2roleDefaultPolicy36095115
+      - scadaprimaryclusterec2role878E7FC3
+  scadaoncloudprimaryInstanceProfileB17A93D3:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  scadaoncloudprimary6F8868B2:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: scadaoncloudprimaryInstanceProfileB17A93D3
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - ec2scadaprimarysgB7054CCC
+            - GroupId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+      Tags:
+        - Key: Name
+          Value: scada_oncloud_primary
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionMasterHostname' --value $(hostname) --type String --overwrite
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionMasterIP' --value $(hostname -I) --type String --overwrite
+                sudo yum install jq -y
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - |-
+                /script/creation_v2.sh .
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - |-
+                /script/postgres_replication.sh .
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - "/script/failover.sh .\nsudo chmod +x ./creation_v2.sh\nsudo chmod +x ./failover.sh\nsudo chmod +x ./postgres_replication.sh\necho 'Calling the Ignitition creation_v2 script'\nonCloudDBPasswd=$(aws secretsmanager get-secret-value --region 'eu-west-1' --secret-id 'onCloudDBCredentials' --output text --query 'SecretString' | jq -r '.password')\ncounter=0\nbackupHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupHostname' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$backupHostname\" ] && [ $counter -lt 1000 ]; do backupHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupHostname' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\nbackupIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupIP' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$backupIP\" ] && [ $counter -lt 1000 ]; do backupIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupIP' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\nsudo ./creation_v2.sh --stackname ScadaDrOnAwsStack --gwname Cloud_Primary_Ignition_Server --gwusername admin --gwpassword admin --redundancyrole master --dbip "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Address
+              - " --dbport "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Port
+              - |2-
+                 --dbschema temp --dbusername administrator --dbpassword $onCloudDBPasswd --ganincominggwname1 Cloud_Backup_Ignition_Server --ganincomingip1 $backupIP --ganincominghost1 $backupHostname
+                sudo yum install "amazon-efs-utils" -y
+                sudo mkdir /mnt/efs
+                fileSystemId=$(aws efs describe-file-systems --region eu-west-1 --query 'FileSystems[?Name==`ScadaDrOnAwsStack/centralEFSBackups`].FileSystemId' --output text)
+                sudo mount -t efs -o tls,iam $fileSystemId.efs.eu-west-1.amazonaws.com:/ /mnt/efs
+                sudo ./postgres_replication.sh cloud eu-west-1
+    DependsOn:
+      - scadaprimaryclusterec2roleDefaultPolicy36095115
+      - scadaprimaryclusterec2role878E7FC3
+  scadaoncloudbackupInstanceProfile1A472635:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  scadaoncloudbackup219FEA26:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: scadaoncloudbackupInstanceProfile1A472635
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - ec2scadaprimarysgB7054CCC
+            - GroupId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+      Tags:
+        - Key: Name
+          Value: scada_oncloud_backup
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                sudo yum install jq -y
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupHostname' --value $(hostname) --type String --overwrite
+                aws ssm put-parameter --region 'eu-west-1' --name 'IgnitionCloudBackupIP' --value $(hostname -I) --type String --overwrite
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - |-
+                /script/creation_v2.sh .
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - "/script/failover.sh .\nsudo chmod +x ./creation_v2.sh\nsudo chmod +x ./failover.sh\necho 'Calling the Ignitition creation_v2 script'\nonCloudDBPasswd=$(aws secretsmanager get-secret-value --region 'eu-west-1' --secret-id 'onCloudDBCredentials' --output text --query 'SecretString' | jq -r '.password')\nsudo chmod +x ./creation_v2.sh\ncounter=0\nmasterHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionMasterHostname' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$masterHostname\" ] && [ $counter -lt 1000 ]; do masterHostname=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionMasterHostname' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\nmasterIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionMasterIP' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$masterIP\" ] && [ $counter -lt 1000 ]; do masterIP=$(aws ssm get-parameter --region 'eu-west-1' --name 'IgnitionMasterIP' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\ncounter=0\ngancertingwname=$(aws ssm get-parameter --region 'eu-west-1' --name '/ScadaDrOnAwsStack/Cloud_Backup_Ignition_Server/gwuuid' --query 'Parameter.Value' --output text)\nwhile [ \"null\" = \"$gancertingwname\" ] && [ $counter -lt 1000 ]; do gancertingwname=$(aws ssm get-parameter --region 'eu-west-1' --name '/ScadaDrOnAwsStack/Cloud_Backup_Ignition_Server/gwuuid' --query 'Parameter.Value' --output text); echo $counter >> /var/log/cloud-init-output.log; sleep 1;((counter++)); done\nsudo ./creation_v2.sh --stackname ScadaDrOnAwsStack --gwname Cloud_Backup_Ignition_Server --gwusername admin --gwpassword admin --redundancyrole backup --masterip $masterHostname --dbip "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Address
+              - " --dbport "
+              - Fn::GetAtt:
+                  - scadadrclouddb78BB9C5A
+                  - Endpoint.Port
+              - |2-
+                 --dbschema temp --dbusername administrator --dbpassword $onCloudDBPasswd --gancertingwname Cloud_Backup_Ignition_Server
+                sudo yum install "amazon-efs-utils" -y
+                sudo mkdir /mnt/efs
+                fileSystemId=$(aws efs describe-file-systems --region eu-west-1 --query 'FileSystems[?Name==`ScadaDrOnAwsStack/centralEFSBackups`].FileSystemId' --output text)
+                sudo mount -t efs -o tls,iam $fileSystemId.efs.eu-west-1.amazonaws.com:/ /mnt/efs
+    DependsOn:
+      - scadaprimaryclusterec2roleDefaultPolicy36095115
+      - scadaprimaryclusterec2role878E7FC3
+  sgec2opcsimulator461D0DA2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/sg_ec2_opc_simulator
+      GroupName: ec2_opc_simulator
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.2.0.0/20
+          Description: Open connection to OPC-UA Simulator from Ignition
+          FromPort: 4840
+          IpProtocol: tcp
+          ToPort: 4840
+        - CidrIp: 10.1.0.0/20
+          Description: Open connection to OPC-UA Simulator from Ignition
+          FromPort: 4840
+          IpProtocol: tcp
+          ToPort: 4840
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  opcuasimulatoredgeInstanceProfileEEA491FB:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: scadaprimaryclusterec2role878E7FC3
+  opcuasimulatoredgeA5F0B37E:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: eu-west-1a
+      IamInstanceProfile:
+        Ref: opcuasimulatoredgeInstanceProfileEEA491FB
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.medium
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - sgec2opcsimulator461D0DA2
+            - GroupId
+      SubnetId:
+        Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1SubnetC40B7F85
+      Tags:
+        - Key: Name
+          Value: opc_ua_simulator_edge
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                sudo yum update -y
+                sudo yum install python3 -y
+                python3 -m pip install opcua
+                aws s3 cp s3://
+              - Ref: scriptsandbinariesC7FE93E9
+              - |-
+                /script/opcua_server.py .
+                sudo chmod +x ./opcua_server.py
+                nohup python3 opcua_server.py &
+    DependsOn:
+      - scadaprimaryclusterec2roleDefaultPolicy36095115
+      - scadaprimaryclusterec2role878E7FC3
+  CentralTransitGateway:
+    Type: AWS::EC2::TransitGateway
+    Properties:
+      AmazonSideAsn: 65000
+      AssociationDefaultRouteTableId: associationDefaultRouteTableId
+      AutoAcceptSharedAttachments: enable
+      DefaultRouteTableAssociation: enable
+      DefaultRouteTablePropagation: enable
+      Description: Main transit gateway to interconnect Cloud, Onpremise and Field device networks
+      DnsSupport: enable
+      MulticastSupport: disable
+      PropagationDefaultRouteTableId: propagationRouteTable
+      TransitGatewayCidrBlocks:
+        - 10.1.0.0/20
+        - 10.2.0.0/20
+        - 10.3.0.0/20
+      VpnEcmpSupport: enable
+  OnPremTransitGatewayAttachment:
+    Type: AWS::EC2::TransitGatewayAttachment
+    Properties:
+      SubnetIds:
+        - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+        - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2SubnetA83629F3
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+  CloudTransitGatewayAttachment:
+    Type: AWS::EC2::TransitGatewayAttachment
+    Properties:
+      SubnetIds:
+        - Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+        - Ref: scadaoncloudvpcscadaoncloudprivateSubnet2Subnet49D996B5
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  EdgeTransitGatewayAttachment:
+    Type: AWS::EC2::TransitGatewayAttachment
+    Properties:
+      SubnetIds:
+        - Ref: devicesonpremisevpcdevicesonpremiseprivateSubnet1SubnetC40B7F85
+      TransitGatewayId:
+        Fn::GetAtt:
+          - CentralTransitGateway
+          - Id
+      VpcId:
+        Ref: devicesonpremisevpcDCD45704
+  sgefscloudsg6F05E9AB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ScadaDrOnAwsStack/sg_efs_cloud_sg
+      GroupName: sg_efs_cloud_sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.1.0.0/20
+          Description: EFS connection for backups storage
+          FromPort: 2049
+          IpProtocol: tcp
+          ToPort: 2049
+      VpcId:
+        Ref: scadaoncloudvpc4593E5FB
+  sgefscloudsgfromScadaDrOnAwsStackec2scadaprimarysg56849D512049DDD4235A:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Cloud instances connection for reading the backups for restore
+      FromPort: 2049
+      GroupId:
+        Fn::GetAtt:
+          - sgefscloudsg6F05E9AB
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - ec2scadaprimarysgB7054CCC
+          - GroupId
+      ToPort: 2049
+  centralEFSBackupsBD3E39EA:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      Encrypted: true
+      FileSystemTags:
+        - Key: Name
+          Value: ScadaDrOnAwsStack/centralEFSBackups
+      LifecyclePolicies:
+        - TransitionToIA: AFTER_14_DAYS
+        - TransitionToPrimaryStorageClass: AFTER_1_ACCESS
+      PerformanceMode: generalPurpose
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  centralEFSBackupsEfsMountTarget1F37034E7:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId:
+        Ref: centralEFSBackupsBD3E39EA
+      SecurityGroups:
+        - Fn::GetAtt:
+            - sgefscloudsg6F05E9AB
+            - GroupId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet1SubnetEC067447
+  centralEFSBackupsEfsMountTarget2D84D8862:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId:
+        Ref: centralEFSBackupsBD3E39EA
+      SecurityGroups:
+        - Fn::GetAtt:
+            - sgefscloudsg6F05E9AB
+            - GroupId
+      SubnetId:
+        Ref: scadaoncloudvpcscadaoncloudprivateSubnet2Subnet49D996B5
+  ScadaDrOnAwsStackCloudBackupIgnitionServergwcert85DA9360:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/Cloud_Backup_Ignition_Server/gwcert
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  ScadaDrOnAwsStackCloudBackupIgnitionServergwkeyA4978DF0:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/Cloud_Backup_Ignition_Server/gwkey
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  ScadaDrOnAwsStackCloudBackupIgnitionServergwuuid6E1B3B27:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/Cloud_Backup_Ignition_Server/gwuuid
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  ScadaDrOnAwsStackOnPremiseBackupIgnitionServergwcert11035699:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/OnPremise_Backup_Ignition_Server/gwcert
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  ScadaDrOnAwsStackOnPremiseBackupIgnitionServergwkey90F0D7C0:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/OnPremise_Backup_Ignition_Server/gwkey
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  ScadaDrOnAwsStackOnPremiseBackupIgnitionServergwuuidD66197DF:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ScadaDrOnAwsStack/OnPremise_Backup_Ignition_Server/gwuuid
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionCloudBackupHostname6567BA7B:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionCloudBackupHostname
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionCloudBackupIPA203BD24:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionCloudBackupIP
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionMasterHostname16DF55E5:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionMasterHostname
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionMasterIP746032D8:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionMasterIP
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionOnPremHostname94E56102:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionOnPremHostname
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionOnPremIPFF1FAF0F:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionOnPremIP
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionOnPremBackupHostnameC7134809:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionOnPremBackupHostname
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  IgnitionOnPremBackupIPAE31B104:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: IgnitionOnPremBackupIP
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  FailoverFlag0D78FB72:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: FailoverFlag
+      Type: String
+      Value: "null"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+  lambdarole3F9471F6:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+  lambdaroleDefaultPolicyCADF8B22:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DeleteNetworkInterface
+              - ec2:DescribeInstances
+              - ec2:DescribeNetworkInterfaces
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - ssm:GetParameter
+              - ssm:PutParameter
+              - ssm:SendCommand
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: lambdaroleDefaultPolicyCADF8B22
+      Roles:
+        - Ref: lambdarole3F9471F6
+  checkignitionstatusSecurityGroup931F28F7:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function ScadaDrOnAwsStackcheckignitionstatusAA274A03
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: scadaonpremisevpc2976FBA2
+    DependsOn:
+      - scadaonpremisevpcscadaonpremiseprivateSubnet1DefaultRoute991AB3B5
+      - scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTableAssociation15B40D88
+      - scadaonpremisevpcscadaonpremiseprivateSubnet2DefaultRoute6B8CD6E2
+      - scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableAssociation23BEA518
+  checkignitionstatus92420C7C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-{{.AccountId}}-eu-west-1
+        S3Key: 942ad306c26f2aa4520188e4648d0b7c8c613fcc9540a475bf11614a518fcfca.zip
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - lambdarole3F9471F6
+          - Arn
+      Runtime: nodejs20.x
+      Timeout: 10
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - checkignitionstatusSecurityGroup931F28F7
+              - GroupId
+        SubnetIds:
+          - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet1SubnetA1CEDE50
+          - Ref: scadaonpremisevpcscadaonpremiseprivateSubnet2SubnetA83629F3
+    DependsOn:
+      - lambdaroleDefaultPolicyCADF8B22
+      - lambdarole3F9471F6
+      - scadaonpremisevpcscadaonpremiseprivateSubnet1DefaultRoute991AB3B5
+      - scadaonpremisevpcscadaonpremiseprivateSubnet1RouteTableAssociation15B40D88
+      - scadaonpremisevpcscadaonpremiseprivateSubnet2DefaultRoute6B8CD6E2
+      - scadaonpremisevpcscadaonpremiseprivateSubnet2RouteTableAssociation23BEA518
+  checkignitionstatusrule6DC671D0:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: cron(* * * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - checkignitionstatus92420C7C
+              - Arn
+          Id: Target0
+  checkignitionstatusruleAllowEventRuleScadaDrOnAwsStackcheckignitionstatusAA274A03DDE22126:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - checkignitionstatus92420C7C
+          - Arn
+      Principal: events.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - checkignitionstatusrule6DC671D0
+          - Arn
+Parameters:
+  SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base
+  SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2

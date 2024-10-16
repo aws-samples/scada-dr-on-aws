@@ -580,6 +580,10 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
 
   private getPublicSubnets(index: number) {
 
+    if(index > this.onCloudVPC.publicSubnets.length-1){
+      index = this.onCloudVPC.publicSubnets.length-1
+    }
+
     /* Subnet selection for the cluster, this statement selects all the private subnets of all AZs in the region */
     let subnet: ec2.SubnetSelection = { subnets: [this.onCloudVPC.publicSubnets[index]] };
     return subnet;
@@ -1035,7 +1039,7 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
       cidrMask: 24,
       name: "scada_on_cloud_public",
       reserved: false, 
-      subnetType: ec2.SubnetType.PUBLIC
+      subnetType: ec2.SubnetType.PUBLIC,
     };
 
     // Private network group

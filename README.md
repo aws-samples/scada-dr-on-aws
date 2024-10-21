@@ -1,4 +1,4 @@
-# Ignition Disaster Recovery on AWS
+# SCADA Disaster Recovery on AWS for Inductive Automation's Ignition
 
 ## Introduction
 This sample code demonstrates how to install, configure and execute a disaster recovery on AWS for Ignition SCADA by [Inductive Automation](https://inductiveautomation.com/scada-software/).

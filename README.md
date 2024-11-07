@@ -3,17 +3,17 @@
 ## Introduction
 This sample code demonstrates how to install, configure and execute a disaster recovery on AWS for Ignition SCADA by [Inductive Automation](https://inductiveautomation.com/scada-software/).
 
-This code is part of an AWS Workshop which [you can find here](https://studio.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485). Workshops are hands-on events designed to teach or introduce practical skills, techniques, or concepts which you can use to solve business problems.
+This code is part of an AWS Workshop which [you can find here](https://catalog.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485/en-US). Workshops are hands-on events designed to teach or introduce practical skills, techniques, or concepts which you can use to solve business problems.
 
 It is highly recommended to consult the workshop to understand the industry background and the architectural details of this project.
 We also suggest to follow all the steps in the workshop to make sure to execute the configuration correctly and complete the disaster recovery.
-In order to start using your own AWS account, you can start from [this section](https://studio.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485) "Getting started with your own AWS account".
+In order to start using your own AWS account, you can start from [this section](https://catalog.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485/en-US/getting-started-aws) "Getting started with your own AWS account".
 
 In this README we will dive deeper only on the explanation of the code, please refer to the workshop for the explanation of the Architecture.
 
 ## Architecture
 
-Please navigate to [this page](https://studio.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485) for the detailed explanation
+Please navigate to [this page](https://catalog.us-east-1.prod.workshops.aws/workshops/7b8b2c07-b91b-4403-92cc-7d3d65fdb485/en-US/ignition-disaster-recovery-on-aws/architecture) for the detailed explanation
 
 ## Code structure
 This code is leveraging [AWS Cloud Development Kit](https://aws.amazon.com/cdk/). AWS CDK is a tool which enables developers to create and configure AWS resources in the AWS Cloud. AWS CDK supports many different languages, in this project we are using Typescript.

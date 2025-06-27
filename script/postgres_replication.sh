@@ -34,10 +34,10 @@ then
     # Install the needed packages to build the client libraries from source
     sudo yum install -y gcc readline-devel libicu-devel zlib-devel openssl-devel
     
-    sudo chmod +x ./postgresql-16.1.tar.gz
-    tar -xvzf ./postgresql-16.1.tar.gz
+    sudo chmod +x ./postgresql-16.3.tar.gz
+    tar -xvzf ./postgresql-16.3.tar.gz
 
-    cd ./postgresql-16.1
+    cd ./postgresql-16.3
 
     # Set bin dir so that executables are put in /usr/bin where psql and the others are installed by RPM
     ./configure --bindir=/usr/bin --with-openssl
@@ -64,10 +64,10 @@ then
     # Install the needed packages to build the client libraries from source
     sudo yum install -y gcc readline-devel libicu-devel zlib-devel openssl-devel
     
-    sudo chmod +x ./postgresql-16.1.tar.gz
-    tar -xvzf ./postgresql-16.1.tar.gz
+    sudo chmod +x ./postgresql-16.3.tar.gz
+    tar -xvzf ./postgresql-16.3.tar.gz
 
-    cd ./postgresql-16.1
+    cd ./postgresql-16.3
 
     # Set bin dir so that executables are put in /usr/bin where psql and the others are installed by RPM
     ./configure --bindir=/usr/bin --with-openssl

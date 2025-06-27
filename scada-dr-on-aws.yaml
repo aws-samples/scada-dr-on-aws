@@ -1202,7 +1202,7 @@ Resources:
       DBSubnetGroupName:
         Ref: scadaprimaryonpremisedbSubnetGroup7A162957
       Engine: postgres
-      EngineVersion: "16.1"
+      EngineVersion: "16.3"
       MasterUserPassword:
         Fn::Join:
           - ""
@@ -1349,7 +1349,7 @@ Resources:
       DBSubnetGroupName:
         Ref: scadadrclouddbSubnetGroupEECF1F22
       Engine: postgres
-      EngineVersion: "16.1"
+      EngineVersion: "16.3"
       MasterUserPassword:
         Fn::Join:
           - ""

@@ -132,7 +132,7 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
     /**
      * Creates a Parameter Group for the RDS (Relational Database Service) instance used in the cloud environment.
      * The Parameter Group is configured with the following settings:
-     *   - Database engine: PostgreSQL version 16.3
+     *   - Database engine: PostgreSQL version 16.9
      *   - Parameter 'rds.enable_pgactive' is set to '1'
      *   - Parameter 'rds.custom_dns_resolution' is set to '1'
      * The created Parameter Group instance is assigned to the 'this.rdsPMG' property.
@@ -143,7 +143,7 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
     /**
      * Creates an Amazon RDS (Relational Database Service) instance in the cloud environment for disaster recovery.
      * The RDS instance is configured with the following settings:
-     *   - Database engine: PostgreSQL version 16.3
+     *   - Database engine: PostgreSQL version 16.9
      *   - Storage is encrypted
      *   - Backup retention period: 30 days
      *   - Instance type: Burstable3, Large
@@ -322,7 +322,7 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
   private createDBParameters() {
 
     this.rdsPMG = new rds.ParameterGroup(this, 'MainParameterGroupCloud', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }), 
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_9 }), 
       description: "",
       parameters: {"rds.enable_pgactive":"1", "rds.custom_dns_resolution":"1"}, 
       removalPolicy: cdk.RemovalPolicy.DESTROY});  
@@ -536,7 +536,7 @@ export class CloudScadaDrOnAwsStack extends cdk.Stack {
     this.onCloudDBCredentials= rds.Credentials.fromUsername("postgres", {secretName: secretName});
 
     this.OnCloudDBCluster = new rds.DatabaseInstance(this, 'scada_dr_cloud_db', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_9 }),
       storageEncrypted: true,
       backupRetention: cdk.Duration.days(30),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE),
